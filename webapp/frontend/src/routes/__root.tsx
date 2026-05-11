@@ -318,6 +318,12 @@ function Credits() {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && "scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
