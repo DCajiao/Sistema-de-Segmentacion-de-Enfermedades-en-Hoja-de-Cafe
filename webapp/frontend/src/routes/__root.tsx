@@ -144,30 +144,22 @@ function TeamButton() {
   return (
     <button
       onClick={handleClick}
-      aria-label="Conoce al equipo detrás de AvoScan"
-      className="fixed bottom-5 right-4 z-50 flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95"
+      aria-label="Equipo detrás de AvoScan"
+      title="Equipo detrás de AvoScan"
+      className="fixed bottom-6 right-4 z-50 flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-semibold shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
       style={{
         background: "linear-gradient(135deg, #1e3d1e 0%, #2d5a2d 100%)",
-        color: "rgba(255,255,255,0.9)",
-        border: "1px solid rgba(125,189,125,0.3)",
-        boxShadow: "0 4px 20px rgba(58,125,58,0.35)",
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 28px rgba(58,125,58,0.55)";
-        (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(125,189,125,0.6)";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 20px rgba(58,125,58,0.35)";
-        (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(125,189,125,0.3)";
+        border: "1px solid rgba(125,189,125,0.35)",
+        boxShadow: "0 4px 16px rgba(58,125,58,0.4)",
       }}
     >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0" aria-hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden>
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
-      <span>Equipo detrás de AvoScan</span>
+      <span style={{ color: "rgba(255,255,255,0.9)" }}>Equipo de AvoScan</span>
     </button>
   );
 }
