@@ -1,7 +1,12 @@
 import random
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+
+from src.services.gemini import validate_avocado
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -17,10 +22,18 @@ DISEASES = [
 
 @app.post("/validate")
 def validate():
-    is_avocado = random.random() < 0.8
-    if is_avocado:
-        return jsonify({"avocado": True})
-    return jsonify({"avocado": False, "reason": "No se detectó un aguacate en la imagen."})
+    body = request.get_json(silent=True) or {}
+    image = body.get("image", "")
+
+    if not image:
+        return jsonify({"error": "image field is required"}), 400
+
+    try:
+        result = validate_avocado(image)
+        return jsonify(result.model_dump(exclude_none=True))
+    except Exception as e:
+        app.logger.error("Gemini validation error: %s", e)
+        return jsonify({"error": "Error al procesar la imagen"}), 500
 
 
 @app.post("/classify")
