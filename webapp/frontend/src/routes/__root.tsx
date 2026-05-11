@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   Outlet,
   Link,
@@ -137,6 +138,19 @@ function GitHubIcon() {
 }
 
 function TeamButton() {
+  const [creditsVisible, setCreditsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = document.getElementById("credits");
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setCreditsVisible(entry.isIntersecting),
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const handleClick = () => {
     document.getElementById("credits")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -146,7 +160,7 @@ function TeamButton() {
       onClick={handleClick}
       aria-label="Equipo detrás de AvoScan"
       title="Equipo detrás de AvoScan"
-      className="fixed bottom-6 right-4 z-50 flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-semibold shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
+      className={`fixed bottom-6 right-4 z-50 flex items-center rounded-full text-xs font-semibold shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 ${creditsVisible ? "h-11 w-11 justify-center gap-0 px-0" : "gap-2 px-4 py-2.5"}`}
       style={{
         background: "linear-gradient(135deg, #1e3d1e 0%, #2d5a2d 100%)",
         border: "1px solid rgba(125,189,125,0.35)",
@@ -159,7 +173,12 @@ function TeamButton() {
         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
-      <span style={{ color: "rgba(255,255,255,0.9)" }}>Equipo de AvoScan</span>
+      <span
+        style={{ color: "rgba(255,255,255,0.9)" }}
+        className={`overflow-hidden transition-all duration-300 ${creditsVisible ? "w-0 opacity-0" : "w-auto opacity-100"}`}
+      >
+        Equipo de AvoScan
+      </span>
     </button>
   );
 }
