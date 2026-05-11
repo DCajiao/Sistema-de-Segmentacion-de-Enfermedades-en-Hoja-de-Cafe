@@ -1,0 +1,12 @@
+{
+  "name": "AvoScan - Diagnóstico de Aguacate",
+  "short_name": "AvoScan",
+  "description": "Clasifica enfermedades de aguacate con tu cámara",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7ed",
+  "theme_color": "#3a7d3a",
+  "icons": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
