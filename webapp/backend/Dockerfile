@@ -9,7 +9,10 @@ RUN pip install --no-cache-dir uv
 COPY pyproject.toml ./
 
 # Install defined dependencies in pyproject.toml
-RUN uv pip install -r pyproject.toml --system
+# Then swap opencv-python (requires X11/libxcb) for the headless variant
+RUN uv pip install -r pyproject.toml --system && \
+    uv pip uninstall opencv-python --system && \
+    uv pip install opencv-python-headless --system
 
 # Copy the rest of the project
 COPY . ./
