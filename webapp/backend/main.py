@@ -4,20 +4,14 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from src.services.gemini import validate_avocado
+from src.services.gemini import validate_coffee_leaf
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-DISEASES = [
-    "Antracnosis",
-    "Mancha negra (Cercospora)",
-    "Roña del aguacate",
-    "Pudrición de raíz",
-    "Sano",
-]
+DISEASES = ["healthy", "miner", "phoma", "rust"]
 
 
 @app.post("/validate")
@@ -29,7 +23,7 @@ def validate():
         return jsonify({"error": "image field is required"}), 400
 
     try:
-        result = validate_avocado(image)
+        result = validate_coffee_leaf(image)
         return jsonify(result.model_dump(exclude_none=True))
     except Exception as e:
         app.logger.error("Gemini validation error: %s", e)
