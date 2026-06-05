@@ -6,8 +6,14 @@ export interface ValidateResponse {
   reason?: string;
 }
 
-export interface DiseaseResponse {
+export interface Detection {
   disease: string;
+  confidence: number;
+  bbox: [number, number, number, number]; // [x1, y1, x2, y2] in pixels
+}
+
+export interface ClassifyResponse {
+  detections: Detection[];
   classification_time: number;
 }
 
@@ -38,9 +44,15 @@ export async function validateCoffeeLeaf(imageBase64: string): Promise<ValidateR
     : { coffee_leaf: false, reason: "No se detectó una hoja de café en la imagen." };
 }
 
-export async function classifyDisease(imageBase64: string): Promise<DiseaseResponse> {
-  if (API_URL) return postJSON<DiseaseResponse>("/classify", { image: imageBase64 });
+export async function classifyDisease(imageBase64: string): Promise<ClassifyResponse> {
+  if (API_URL) return postJSON<ClassifyResponse>("/classify", { image: imageBase64 });
   await delay(1400);
   const disease = MOCK_DISEASES[Math.floor(Math.random() * MOCK_DISEASES.length)];
-  return { disease, classification_time: Math.round((1 + Math.random() * 9) * 10) / 10 };
+  if (disease === "healthy") {
+    return { detections: [], classification_time: parseFloat((1 + Math.random() * 9).toFixed(1)) };
+  }
+  return {
+    detections: [{ disease, confidence: parseFloat((0.7 + Math.random() * 0.25).toFixed(3)), bbox: [50, 50, 400, 400] }],
+    classification_time: parseFloat((1 + Math.random() * 9).toFixed(1)),
+  };
 }
