@@ -1,6 +1,9 @@
 import base64
+import logging
 import os
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 from google import genai
 from google.genai import types
@@ -59,9 +62,11 @@ def _parse_image(image_base64: str) -> tuple[bytes, str]:
 
 
 def validate_coffee_leaf(image_base64: str) -> ValidateResult:
+    logger.info("Sending image to Gemini for coffee leaf validation")
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
     image_bytes, mime_type = _parse_image(image_base64)
+    logger.debug("Image parsed — mime_type=%s | size=%d bytes", mime_type, len(image_bytes))
 
     response = client.models.generate_content(
         model="gemini-2.5-flash",
@@ -75,4 +80,6 @@ def validate_coffee_leaf(image_base64: str) -> ValidateResult:
         ),
     )
 
-    return response.parsed
+    result = response.parsed
+    logger.info("Gemini result: coffee_leaf=%s | reason=%s", result.coffee_leaf, result.reason)
+    return result
