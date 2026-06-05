@@ -1,8 +1,8 @@
-// API client for avocado classification.
+// API client for coffee leaf disease detection.
 // Set VITE_API_URL in env to point to your backend. Falls back to mock responses.
 
 export interface ValidateResponse {
-  avocado: boolean;
+  coffee_leaf: boolean;
   reason?: string;
 }
 
@@ -23,26 +23,19 @@ async function postJSON<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-const MOCK_DISEASES = [
-  "Antracnosis",
-  "Mancha negra (Cercospora)",
-  "Roña del aguacate",
-  "Sano",
-  "Pudrición de raíz",
-];
+const MOCK_DISEASES = ["healthy", "miner", "phoma", "rust"];
 
 function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-export async function validateAvocado(imageBase64: string): Promise<ValidateResponse> {
+export async function validateCoffeeLeaf(imageBase64: string): Promise<ValidateResponse> {
   if (API_URL) return postJSON<ValidateResponse>("/validate", { image: imageBase64 });
   await delay(900);
-  // Mock: 80% probabilidad de ser aguacate
   const ok = Math.random() < 0.8;
   return ok
-    ? { avocado: true }
-    : { avocado: false, reason: "There is not an avocado, there is an orange" };
+    ? { coffee_leaf: true }
+    : { coffee_leaf: false, reason: "No se detectó una hoja de café en la imagen." };
 }
 
 export async function classifyDisease(imageBase64: string): Promise<DiseaseResponse> {
