@@ -237,4 +237,4 @@ PORT=8000   # Cloud Run lo inyecta automáticamente
 
 | Notebook | Descripción |
 |---|---|
-| `yolov8_coffee_leaf.ipynb` | Fine-tuning YOLOv8n sobre Coffee Leaf v6, métricas por clase y análisis de errores |
+| `Modelo_Proyecto_VC.ipynb` | Fine-tuning YOLOv8n sobre Coffee Leaf v6, métricas por clase y análisis de errores |
