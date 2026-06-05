@@ -1,3 +1,5 @@
+import logging
+
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -6,6 +8,13 @@ from src.services.gemini import validate_coffee_leaf
 from src.services.yolo import classify_coffee_leaf
 
 load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
@@ -23,7 +32,7 @@ def validate():
         result = validate_coffee_leaf(image)
         return jsonify(result.model_dump(exclude_none=True))
     except Exception as e:
-        app.logger.error("Gemini validation error: %s", e)
+        logger.error("Gemini validation error: %s", e, exc_info=True)
         return jsonify({"error": "Error al procesar la imagen"}), 500
 
 
@@ -39,9 +48,12 @@ def classify():
         result = classify_coffee_leaf(image)
         return jsonify(result)
     except Exception as e:
-        app.logger.error("YOLOv8 classification error: %s", e)
+        logger.error("YOLOv8 classification error: %s", e, exc_info=True)
         return jsonify({"error": "Error al clasificar la imagen"}), 500
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8000, host="0.0.0.0")
+    import os
+    port = int(os.environ.get("PORT", 8000))
+    logger.info("Starting Flask on port %d", port)
+    app.run(debug=False, port=port, host="0.0.0.0")
