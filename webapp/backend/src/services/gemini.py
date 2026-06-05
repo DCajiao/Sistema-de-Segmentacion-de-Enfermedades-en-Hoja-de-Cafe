@@ -10,29 +10,22 @@ from google.genai import types
 from pydantic import BaseModel
 
 VALIDATE_PROMPT = """
-You are an expert agricultural AI specialized in coffee crop disease analysis.
+You are a pre-filter for a coffee leaf disease analysis system.
 
-Your task is to determine whether the provided image is suitable for disease segmentation on a coffee plant leaf.
+Your ONLY task is to determine whether the image shows a plant leaf of any kind.
 
-A valid image must show a coffee plant leaf (Coffea arabica or Coffea canephora) with these characteristics:
-- Elongated elliptical shape with a pointed tip and visible central midrib
-- The leaf surface must be clear enough to observe potential disease symptoms (spots, lesions, discoloration)
-- The leaf must occupy a significant portion of the frame
-- The image must be sufficiently sharp and well-lit
+Return coffee_leaf=true if:
+- The image shows any plant leaf, in any condition: healthy, damaged, torn, folded, discolored, wilted, or diseased.
+- Partial leaves, close-up shots of leaf surfaces, or leaves with poor lighting are acceptable.
+- You do NOT need to identify the plant species.
 
-Return coffee_leaf=true ONLY if all of the following are true:
-1. The image clearly shows a coffee plant leaf.
-2. The leaf surface is visible and sharp enough for disease analysis.
-3. You are confident in the identification.
-
-Return coffee_leaf=false if:
-- The image does not show a coffee leaf (shows fruit, branch, soil, another plant species, a person, an object, etc.)
-- The image is too blurry, too dark, or the leaf is too far away to distinguish surface details.
-- You are not confident.
+Return coffee_leaf=false ONLY if:
+- The image contains no leaf at all (e.g., hands, fruit, bare branch, soil, a person, an object, a blank surface).
+- The image is completely unrelated to plant foliage.
 
 When coffee_leaf=false, the "reason" field is required: one short sentence in Spanish explaining why the image was rejected.
 
-Be strict. When in doubt, return coffee_leaf=false.
+Be permissive. Reject only clearly non-leaf images. When in doubt, return coffee_leaf=true.
 """
 
 
