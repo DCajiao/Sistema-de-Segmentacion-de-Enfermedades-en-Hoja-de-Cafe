@@ -1,6 +1,7 @@
 import { AlertCircle, CheckCircle2, RotateCcw, Sparkles, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
+import type { Detection } from "@/lib/api";
 
 interface NotCoffeeLeafProps {
   reason?: string;
@@ -30,14 +31,17 @@ export function NotCoffeeLeafScreen({ reason, image, onRetry }: NotCoffeeLeafPro
 }
 
 interface DiseaseProps {
-  disease: string;
+  detections: Detection[];
   time: number;
   image: string;
   onRestart: () => void;
 }
 
-export function DiseaseResultScreen({ disease, time, image, onRestart }: DiseaseProps) {
-  const healthy = /sano|healthy/i.test(disease);
+export function DiseaseResultScreen({ detections, time, image, onRestart }: DiseaseProps) {
+  const healthy = detections.length === 0;
+  const primary = healthy ? null : detections.reduce((a, b) => a.confidence > b.confidence ? a : b);
+  const displayName = primary ? primary.disease : "Sana";
+
   return (
     <div className="flex flex-col items-center text-center gap-6 py-4">
       <div className="relative w-44 h-44 rounded-3xl overflow-hidden shadow-glow ring-4 ring-primary/20">
@@ -51,12 +55,31 @@ export function DiseaseResultScreen({ disease, time, image, onRestart }: Disease
           <Sparkles className="h-10 w-10 text-primary" />
         )}
         <p className="text-sm uppercase tracking-wider text-muted-foreground">Resultado</p>
-        <h2 className="text-3xl font-bold leading-tight">{disease}</h2>
+        <h2 className="text-3xl font-bold leading-tight capitalize">{displayName}</h2>
+        {primary && (
+          <p className="text-sm text-muted-foreground">
+            Confianza: {(primary.confidence * 100).toFixed(1)}%
+          </p>
+        )}
       </div>
+
+      {detections.length > 1 && (
+        <div className="flex flex-wrap gap-2 justify-center">
+          {detections.map((d, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium"
+            >
+              <span className="capitalize">{d.disease}</span>
+              <span className="text-muted-foreground">{(d.confidence * 100).toFixed(0)}%</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm">
         <Clock className="h-4 w-4" />
-        Clasificado en {time}s
+        Analizado en {time}s
       </div>
 
       <div className="flex flex-col gap-3 w-full max-w-xs">
