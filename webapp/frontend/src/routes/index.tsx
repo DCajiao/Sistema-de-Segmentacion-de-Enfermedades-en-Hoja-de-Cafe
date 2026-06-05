@@ -4,20 +4,20 @@ import { Camera, Sparkles, ShieldCheck } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { CameraCapture } from "@/components/CameraCapture";
 import { LoaderScreen } from "@/components/LoaderScreen";
-import { DiseaseResultScreen, NotAvocadoScreen } from "@/components/ResultScreens";
+import { DiseaseResultScreen, NotCoffeeLeafScreen } from "@/components/ResultScreens";
 import { Button } from "@/components/ui/button";
-import { classifyDisease, validateAvocado } from "@/lib/api";
+import { classifyDisease, validateCoffeeLeaf } from "@/lib/api";
 import { addRecord } from "@/lib/history";
 
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "AvoScan — Diagnóstico de aguacate con cámara" },
+      { title: "Coffee Leaf AI — Diagnóstico de hoja de café con cámara" },
       {
         name: "description",
         content:
-          "Toma una foto y descubre al instante qué enfermedad tiene tu aguacate. Rápido, simple y desde tu teléfono.",
+          "Toma una foto y descubre al instante qué enfermedad tiene tu hoja de café. Rápido, simple y desde tu teléfono.",
       },
     ],
   }),
@@ -27,7 +27,7 @@ type Step =
   | { name: "intro" }
   | { name: "capture" }
   | { name: "validating"; image: string }
-  | { name: "not-avocado"; image: string; reason?: string }
+  | { name: "not-coffee-leaf"; image: string; reason?: string }
   | { name: "classifying"; image: string }
   | { name: "result"; image: string; disease: string; time: number };
 
@@ -37,9 +37,9 @@ function Index() {
   const handleCapture = async (image: string) => {
     setStep({ name: "validating", image });
     try {
-      const v = await validateAvocado(image);
-      if (!v.avocado) {
-        setStep({ name: "not-avocado", image, reason: v.reason });
+      const v = await validateCoffeeLeaf(image);
+      if (!v.coffee_leaf) {
+        setStep({ name: "not-coffee-leaf", image, reason: v.reason });
         return;
       }
       setStep({ name: "classifying", image });
@@ -52,7 +52,7 @@ function Index() {
       setStep({ name: "result", image, disease: r.disease, time: r.classification_time });
     } catch {
       setStep({
-        name: "not-avocado",
+        name: "not-coffee-leaf",
         image,
         reason: "No pudimos procesar la imagen. Inténtalo de nuevo.",
       });
@@ -67,7 +67,7 @@ function Index() {
 
         {step.name === "capture" && (
           <div className="flex-1 flex flex-col">
-            <h1 className="text-xl font-bold mb-3">Toma una foto del aguacate</h1>
+            <h1 className="text-xl font-bold mb-3">Toma una foto de la hoja de café</h1>
             <div className="flex-1 min-h-[60vh] flex">
               <CameraCapture
                 onCapture={handleCapture}
@@ -80,12 +80,12 @@ function Index() {
         {step.name === "validating" && (
           <LoaderScreen
             title="Verificando la imagen…"
-            subtitle="Estamos comprobando que sea un aguacate."
+            subtitle="Estamos comprobando que sea una hoja de café."
           />
         )}
 
-        {step.name === "not-avocado" && (
-          <NotAvocadoScreen
+        {step.name === "not-coffee-leaf" && (
+          <NotCoffeeLeafScreen
             image={step.image}
             reason={step.reason}
             onRetry={() => setStep({ name: "capture" })}
@@ -117,14 +117,14 @@ function Intro({ onStart }: { onStart: () => void }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center gap-8 py-8">
       <div className="relative">
         <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full" />
-        <div className="relative h-28 w-28 rounded-3xl bg-gradient-to-br from-primary to-[oklch(0.7_0.18_142)] flex items-center justify-center shadow-glow">
+        <div className="relative h-28 w-28 rounded-3xl bg-gradient-to-br from-primary to-[oklch(0.65_0.12_50)] flex items-center justify-center shadow-glow">
           <Camera className="h-12 w-12 text-primary-foreground" />
         </div>
       </div>
 
       <div className="space-y-3">
         <h1 className="text-3xl font-bold tracking-tight">
-          Diagnostica tu aguacate <br /> en segundos
+          Diagnostica tu hoja de café <br /> en segundos
         </h1>
         <p className="text-muted-foreground text-base max-w-sm">
           Toma una foto con tu cámara y deja que la IA identifique posibles
