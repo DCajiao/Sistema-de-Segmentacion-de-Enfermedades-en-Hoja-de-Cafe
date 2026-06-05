@@ -119,13 +119,17 @@ function InterpretationSection({ detections }: { detections: Detection[] }) {
       </div>
 
       {loading ? (
-        <div className="space-y-2 animate-pulse">
-          <div className="h-3 bg-muted rounded w-full" />
-          <div className="h-3 bg-muted rounded w-5/6" />
-          <div className="h-3 bg-muted rounded w-4/5" />
-          <div className="h-8 bg-muted rounded w-full mt-3" />
-          <div className="h-8 bg-muted rounded w-full" />
-          <div className="h-8 bg-muted rounded w-4/5" />
+        <div className="flex items-center gap-2 py-1">
+          <span className="text-sm text-muted-foreground">Pensando</span>
+          <span className="flex gap-1">
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce"
+                style={{ animationDelay: `${i * 150}ms` }}
+              />
+            ))}
+          </span>
         </div>
       ) : data ? (
         <div className="space-y-4">
