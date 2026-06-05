@@ -36,7 +36,7 @@ La selección de YOLOv8 también es pertinente por razones técnicas y de aplica
 
 ## Justificación de las clases
 
-Las clases seleccionadas para este proyecto —healthy, miner, phoma y rust— responden a un criterio de pertinencia agronómica y de disponibilidad de información visual suficiente para el entrenamiento. No se eligieron de manera arbitraria, sino porque representan condiciones frecuentes y relevantes dentro del contexto de enfermedades y afectaciones foliares del café.
+Las clases seleccionadas para este proyecto (healthy, miner, phoma y rust) responden a un criterio de pertinencia agronómica y de disponibilidad de información visual suficiente para el entrenamiento. No se eligieron de manera arbitraria, sino porque representan condiciones frecuentes y relevantes dentro del contexto de enfermedades y afectaciones foliares del café.
 
 La clase healthy es necesaria porque define el estado de referencia de una hoja sana. Incluir esta categoría permite contrastar visualmente las hojas sin afectación frente a las hojas con síntomas, lo cual es esencial para un sistema de diagnóstico. Sin esta clase, el modelo solo aprendería a reconocer daño, pero no tendría un punto de comparación claro para distinguir el estado normal del cultivo.
 
