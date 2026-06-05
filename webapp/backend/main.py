@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from src.services.gemini import validate_coffee_leaf
+from src.services.gemini import interpret_detections, validate_coffee_leaf
 from src.services.yolo import classify_coffee_leaf
 
 load_dotenv()
@@ -50,6 +50,19 @@ def classify():
     except Exception as e:
         logger.error("YOLOv8 classification error: %s", e, exc_info=True)
         return jsonify({"error": "Error al clasificar la imagen"}), 500
+
+
+@app.post("/interpret")
+def interpret():
+    body = request.get_json(silent=True) or {}
+    detections = body.get("detections", [])
+
+    try:
+        result = interpret_detections(detections)
+        return jsonify(result.model_dump())
+    except Exception as e:
+        logger.error("Gemini interpretation error: %s", e, exc_info=True)
+        return jsonify({"error": "Error al interpretar los resultados"}), 500
 
 
 if __name__ == "__main__":
