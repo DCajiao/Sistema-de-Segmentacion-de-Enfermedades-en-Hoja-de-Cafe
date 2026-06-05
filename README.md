@@ -1,6 +1,6 @@
-# Coffee Leaf AI — Detección de Enfermedades en Hoja de Café
+# Coffee Leaf AI — Segmentación de Enfermedades en Hoja de Café
 
-Detección de enfermedades en hojas de café mediante Visión Computacional, expuesta a través de una aplicación web PWA accesible desde móvil.
+Segmentación de enfermedades en hojas de café mediante Visión Computacional, expuesta a través de una aplicación web PWA accesible desde móvil.
 
 **Equipo — Ingeniería de Datos e IA**
 
@@ -10,7 +10,7 @@ Detección de enfermedades en hojas de café mediante Visión Computacional, exp
 
 ---
 
-## Modelo de detección
+## Modelo de segmentación
 
 **YOLOv8n** fine-tuned sobre el dataset [Coffee Leaf v6 (Roboflow)](https://roboflow.com), con 3.993 imágenes de entrenamiento y 167 de validación.
 
@@ -127,7 +127,7 @@ Clasifica la enfermedad presente en la hoja de café.
 { "disease": "rust", "classification_time": 0.82 }
 ```
 
-**Clases detectables:** `healthy`, `miner`, `phoma`, `rust`
+**Clases segmentables:** `healthy`, `miner`, `phoma`, `rust`
 
 > `/classify` actualmente devuelve valores mock. La integración de YOLOv8 es el próximo paso.
 
