@@ -9,8 +9,8 @@ export const Route = createFileRoute("/history")({
   component: HistoryPage,
   head: () => ({
     meta: [
-      { title: "Historial — AvoScan" },
-      { name: "description", content: "Revisa tus análisis de aguacate anteriores." },
+      { title: "Historial — Coffee Leaf AI" },
+      { name: "description", content: "Revisa tus análisis de hoja de café anteriores." },
     ],
   }),
 });
@@ -64,7 +64,7 @@ function HistoryPage() {
               <Leaf className="h-7 w-7 text-primary" />
             </div>
             <p className="text-muted-foreground text-sm max-w-xs">
-              Aún no tienes análisis. Cuando clasifiques un aguacate, aparecerá aquí.
+              Aún no tienes análisis. Cuando clasifiques una hoja de café, aparecerá aquí.
             </p>
             <Button asChild variant="hero" className="rounded-full">
               <Link to="/">Hacer mi primer análisis</Link>
