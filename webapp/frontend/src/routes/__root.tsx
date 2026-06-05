@@ -73,25 +73,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#3a7d3a" },
+      { name: "theme-color", content: "#7b4a2d" },
       { name: "mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "AvoScan" },
-      { title: "AvoScan — Diagnóstico de aguacate" },
-      { name: "description", content: "Toma una foto y diagnostica enfermedades del aguacate al instante." },
-      { property: "og:title", content: "AvoScan — Diagnóstico de aguacate" },
-      { property: "og:description", content: "Toma una foto y diagnostica enfermedades del aguacate al instante con Visión Computacional" },
+      { name: "apple-mobile-web-app-title", content: "Coffee Leaf AI" },
+      { title: "Coffee Leaf AI — Diagnóstico de hoja de café" },
+      { name: "description", content: "Toma una foto y diagnostica enfermedades en hojas de café al instante." },
+      { property: "og:title", content: "Coffee Leaf AI — Diagnóstico de hoja de café" },
+      { property: "og:description", content: "Toma una foto y diagnostica enfermedades en hojas de café al instante con Visión Computacional" },
       { property: "og:type", content: "website" },
       { property: "og:image", content: "/icon-512.png" },
       { property: "og:image:width", content: "512" },
       { property: "og:image:height", content: "512" },
-      { property: "og:image:alt", content: "AvoScan - Diagnóstico de enfermedades en aguacate" },
-      { property: "og:site_name", content: "AvoScan" },
+      { property: "og:image:alt", content: "Coffee Leaf AI - Diagnóstico de enfermedades en hoja de café" },
+      { property: "og:site_name", content: "Coffee Leaf AI" },
       { property: "og:locale", content: "es_CO" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "AvoScan — Diagnóstico de aguacate" },
-      { name: "twitter:description", content: "Toma una foto y diagnostica enfermedades del aguacate al instante con Visión Computacional" },
+      { name: "twitter:title", content: "Coffee Leaf AI — Diagnóstico de hoja de café" },
+      { name: "twitter:description", content: "Toma una foto y diagnostica enfermedades en hojas de café al instante con Visión Computacional" },
       { name: "twitter:image", content: "/icon-512.png" },
-      { name: "twitter:image:alt", content: "AvoScan - Diagnóstico de enfermedades en aguacate" },
+      { name: "twitter:image:alt", content: "Coffee Leaf AI - Diagnóstico de enfermedades en hoja de café" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -158,13 +158,13 @@ function TeamButton() {
   return (
     <button
       onClick={handleClick}
-      aria-label="Equipo detrás de AvoScan"
-      title="Equipo detrás de AvoScan"
+      aria-label="Equipo detrás de Coffee Leaf AI"
+      title="Equipo detrás de Coffee Leaf AI"
       className={`fixed bottom-6 right-4 z-50 flex items-center rounded-full text-xs font-semibold shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 ${creditsVisible ? "h-11 w-11 justify-center gap-0 px-0" : "gap-2 px-4 py-2.5"}`}
       style={{
-        background: "linear-gradient(135deg, #1e3d1e 0%, #2d5a2d 100%)",
-        border: "1px solid rgba(125,189,125,0.35)",
-        boxShadow: "0 4px 16px rgba(58,125,58,0.4)",
+        background: "linear-gradient(135deg, #2d1a0e 0%, #5c3520 100%)",
+        border: "1px solid rgba(200,145,75,0.35)",
+        boxShadow: "0 4px 16px rgba(120,65,25,0.4)",
       }}
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden>
@@ -177,7 +177,7 @@ function TeamButton() {
         style={{ color: "rgba(255,255,255,0.9)" }}
         className={`overflow-hidden transition-all duration-300 ${creditsVisible ? "w-0 opacity-0" : "w-auto opacity-100"}`}
       >
-        Equipo de AvoScan
+        Equipo de Coffee Leaf AI
       </span>
     </button>
   );
@@ -189,27 +189,27 @@ function Credits() {
       id="credits"
       className="relative overflow-hidden"
       style={{
-        background: "linear-gradient(160deg, #152b15 0%, #1e3d1e 45%, #162a16 100%)",
+        background: "linear-gradient(160deg, #1a0e08 0%, #2d1a0e 45%, #1a0e08 100%)",
       }}
     >
       <style>{`
-        @keyframes avo-ring-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(125, 189, 125, 0); }
-          50% { box-shadow: 0 0 0 5px rgba(125, 189, 125, 0.18); }
+        @keyframes coffee-ring-pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(200, 145, 75, 0); }
+          50% { box-shadow: 0 0 0 5px rgba(200, 145, 75, 0.18); }
         }
-        .avo-avatar:hover { animation: avo-ring-pulse 1.6s ease-in-out infinite; }
-        @keyframes avo-shimmer {
+        .coffee-avatar:hover { animation: coffee-ring-pulse 1.6s ease-in-out infinite; }
+        @keyframes coffee-shimmer {
           0% { background-position: -200% center; }
           100% { background-position: 200% center; }
         }
-        .avo-handle {
-          background: linear-gradient(90deg, rgba(125,189,125,0.4) 0%, rgba(125,189,125,1) 50%, rgba(125,189,125,0.4) 100%);
+        .coffee-handle {
+          background: linear-gradient(90deg, rgba(200,145,75,0.4) 0%, rgba(200,145,75,1) 50%, rgba(200,145,75,0.4) 100%);
           background-size: 200% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
-        .avo-member:hover .avo-handle { animation: avo-shimmer 1.4s linear infinite; }
+        .coffee-member:hover .coffee-handle { animation: coffee-shimmer 1.4s linear infinite; }
       `}</style>
 
       {/* Hex cell overlay */}
@@ -224,7 +224,7 @@ function Credits() {
       {/* Top edge glow */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
-        style={{ background: "linear-gradient(90deg, transparent, rgba(125,189,125,0.35), transparent)" }}
+        style={{ background: "linear-gradient(90deg, transparent, rgba(200,145,75,0.35), transparent)" }}
       />
 
       <div className="relative mx-auto max-w-sm px-6 py-12">
@@ -247,17 +247,17 @@ function Credits() {
                 href={member.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="avo-member group flex flex-col items-center gap-3 text-center"
+                className="coffee-member group flex flex-col items-center gap-3 text-center"
               >
                 <div
-                  className="avo-avatar flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300"
+                  className="coffee-avatar flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300"
                   style={{
                     background: "rgba(255,255,255,0.07)",
                     border: "1px solid rgba(255,255,255,0.13)",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background = "rgba(125,189,125,0.15)";
-                    (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(125,189,125,0.45)";
+                    (e.currentTarget as HTMLDivElement).style.background = "rgba(200,145,75,0.15)";
+                    (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(200,145,75,0.45)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.07)";
@@ -278,7 +278,7 @@ function Credits() {
                   <p className="text-sm font-semibold leading-tight" style={{ color: "rgba(255,255,255,0.85)" }}>
                     {last}
                   </p>
-                  <p className="avo-handle mt-1.5 font-mono text-[11px]">@{member.handle}</p>
+                  <p className="coffee-handle mt-1.5 font-mono text-[11px]">@{member.handle}</p>
                 </div>
               </a>
             );
@@ -303,7 +303,7 @@ function Credits() {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 transition-colors duration-200"
             style={{ color: "rgba(255,255,255,0.35)" }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(125,189,125,0.9)")}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(200,145,75,0.9)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.35)")}
           >
             <GitHubIcon />
