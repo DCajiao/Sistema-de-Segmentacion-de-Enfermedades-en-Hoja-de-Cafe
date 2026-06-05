@@ -89,8 +89,11 @@ El frontend se despliega en **Render** como Web Service Node.js. El backend se d
     │           └── history.tsx    # Historial de diagnósticos
     └── backend/
         ├── main.py                # API Flask con /validate y /classify
+        ├── model/
+        │   └── best.pt            # Pesos YOLOv8n entrenados (Coffee Leaf v6)
         ├── src/services/
-        │   └── gemini.py          # Validación con Gemini
+        │   ├── gemini.py          # Validación con Gemini
+        │   └── yolo.py            # Inferencia YOLOv8n
         ├── pyproject.toml
         ├── Dockerfile
         └── uv.lock
@@ -128,8 +131,6 @@ Clasifica la enfermedad presente en la hoja de café.
 ```
 
 **Clases segmentables:** `healthy`, `miner`, `phoma`, `rust`
-
-> `/classify` actualmente devuelve valores mock. La integración de YOLOv8 es el próximo paso.
 
 ---
 
