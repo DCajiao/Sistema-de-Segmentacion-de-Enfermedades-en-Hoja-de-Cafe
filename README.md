@@ -207,7 +207,7 @@ pnpm dev
 |---|---|
 | Root Directory | `webapp/frontend` |
 | Runtime | Node |
-| Build Command | `corepack enable && pnpm install && pnpm build` |
+| Build Command | `pnpm install && pnpm build` |
 | Start Command | `pnpm start` |
 | Node Version | 20 |
 
