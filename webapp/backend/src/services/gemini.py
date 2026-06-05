@@ -7,25 +7,27 @@ from google.genai import types
 from pydantic import BaseModel
 
 VALIDATE_PROMPT = """
-You are an expert agricultural AI specialized in avocado crop analysis.
+You are an expert agricultural AI specialized in coffee crop analysis.
 
-Your task is to determine whether the provided image shows an avocado.
+Your task is to determine whether the provided image shows a coffee leaf.
 
-An avocado can be:
-- The avocado fruit (Persea americana): pear-shaped, green, dark green, or purple-black skin
-- A leaf from an avocado tree: elongated, smooth, glossy, dark green
+A coffee leaf (Coffea arabica or Coffea canephora) typically has:
+- An elongated elliptical shape with a pointed tip
+- A prominent central midrib with visible lateral veins
+- A glossy, smooth surface with dark green color
+- Slightly wavy or undulate leaf margins
 
 Evaluation criteria:
-- Respond avocado=true ONLY if you clearly and confidently identify an avocado fruit or avocado leaf.
-- Respond avocado=false if the image shows something else, is too blurry, is unrelated, or you are not confident.
-- The "reason" field is ONLY required when avocado=false. Write it in Spanish, one short sentence.
+- Respond coffee_leaf=true ONLY if you clearly and confidently identify a coffee plant leaf.
+- Respond coffee_leaf=false if the image shows something else (fruit, branch, soil, other plant), is too blurry, is unrelated, or you are not confident.
+- The "reason" field is ONLY required when coffee_leaf=false. Write it in Spanish, one short sentence.
 
-Be strict. When in doubt, respond avocado=false.
+Be strict. When in doubt, respond coffee_leaf=false.
 """
 
 
 class ValidateResult(BaseModel):
-    avocado: bool
+    coffee_leaf: bool
     reason: Optional[str] = None
 
 
@@ -49,7 +51,7 @@ def _parse_image(image_base64: str) -> tuple[bytes, str]:
     return base64.b64decode(data), mime
 
 
-def validate_avocado(image_base64: str) -> ValidateResult:
+def validate_coffee_leaf(image_base64: str) -> ValidateResult:
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
     image_bytes, mime_type = _parse_image(image_base64)
