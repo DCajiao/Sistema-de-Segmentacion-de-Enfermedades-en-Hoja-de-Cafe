@@ -89,11 +89,12 @@ El frontend se despliega en **Render** como Web Service Node.js. El backend se d
     │           └── history.tsx    # Historial de diagnósticos
     └── backend/
         ├── main.py                # API Flask con /validate y /classify
+        ├── .env.template          # Variables de entorno requeridas
         ├── model/
-        │   └── best.pt            # Pesos YOLOv8n entrenados (Coffee Leaf v6)
+        │   └── best.pt            # Pesos YOLOv8n entrenados (Coffee Leaf v6, 6 MB)
         ├── src/services/
-        │   ├── gemini.py          # Validación con Gemini
-        │   └── yolo.py            # Inferencia YOLOv8n
+        │   ├── gemini.py          # Pre-filtro de hoja con Gemini 2.5 Flash
+        │   └── yolo.py            # Detección de enfermedades con YOLOv8n
         ├── pyproject.toml
         ├── Dockerfile
         └── uv.lock
@@ -104,7 +105,7 @@ El frontend se despliega en **Render** como Web Service Node.js. El backend se d
 ## Endpoints del backend
 
 ### `POST /validate`
-Valida si la imagen contiene una hoja de café (Gemini 2.5 Flash).
+Pre-filtro: verifica que la imagen muestre una hoja de planta (Gemini 2.5 Flash). Acepta hojas de cualquier especie y en cualquier condición (dañadas, dobladas, decoloradas). Solo rechaza imágenes sin foliaje visible.
 
 **Request**
 ```json
@@ -114,11 +115,11 @@ Valida si la imagen contiene una hoja de café (Gemini 2.5 Flash).
 **Response**
 ```json
 { "coffee_leaf": true }
-{ "coffee_leaf": false, "reason": "Descripción del problema en español" }
+{ "coffee_leaf": false, "reason": "Descripción del rechazo en español" }
 ```
 
 ### `POST /classify`
-Clasifica la enfermedad presente en la hoja de café.
+Detecta enfermedades en la hoja mediante YOLOv8n. Devuelve todas las detecciones encontradas por encima del umbral de confianza (`conf=0.30`, `iou=0.45`).
 
 **Request**
 ```json
@@ -127,10 +128,19 @@ Clasifica la enfermedad presente en la hoja de café.
 
 **Response**
 ```json
-{ "disease": "rust", "classification_time": 0.82 }
+{
+  "detections": [
+    { "disease": "rust",  "confidence": 0.848, "bbox": [45.0, 120.3, 390.5, 480.1] },
+    { "disease": "miner", "confidence": 0.712, "bbox": [200.0, 50.0, 320.0, 180.0] }
+  ],
+  "classification_time": 1.13
+}
 ```
 
-**Clases segmentables:** `healthy`, `miner`, `phoma`, `rust`
+- `detections` vacío → hoja sana (ninguna detección supera el umbral).
+- `bbox` en píxeles `[x1, y1, x2, y2]` sobre la imagen redimensionada a 640×640 por YOLO internamente.
+
+**Clases detectables:** `healthy` · `miner` · `phoma` · `rust`
 
 ---
 
@@ -182,12 +192,18 @@ NODE_ENV=production
 VITE_API_URL=<URL del backend desplegado>
 ```
 
-### Backend — Docker
+### Backend — Docker / Cloud Run
 
 ```bash
 cd webapp/backend
 docker build -t coffee-leaf-ai-backend .
 docker run -p 8000:8000 --env-file .env coffee-leaf-ai-backend
+```
+
+Variables de entorno requeridas:
+```
+GEMINI_API_KEY=<tu clave de AI Studio>
+PORT=8000   # Cloud Run lo inyecta automáticamente
 ```
 
 ---
@@ -196,4 +212,4 @@ docker run -p 8000:8000 --env-file .env coffee-leaf-ai-backend
 
 | Notebook | Descripción |
 |---|---|
-| `CNN_Laboratorio2026.ipynb` | Fine-tuning YOLOv8n sobre Coffee Leaf v6, métricas por clase y análisis de errores |
+| `yolov8_coffee_leaf.ipynb` | Fine-tuning YOLOv8n sobre Coffee Leaf v6, métricas por clase y análisis de errores |
