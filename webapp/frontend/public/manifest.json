@@ -1,11 +1,11 @@
 {
-  "name": "AvoScan - Diagnóstico de Aguacate",
-  "short_name": "AvoScan",
-  "description": "Clasifica enfermedades de aguacate con tu cámara",
+  "name": "Coffee Leaf AI - Diagnóstico de Hoja de Café",
+  "short_name": "Coffee Leaf AI",
+  "description": "Clasifica enfermedades en hojas de café con tu cámara",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f7ed",
-  "theme_color": "#3a7d3a",
+  "background_color": "#faf4ec",
+  "theme_color": "#7b4a2d",
   "icons": [
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
