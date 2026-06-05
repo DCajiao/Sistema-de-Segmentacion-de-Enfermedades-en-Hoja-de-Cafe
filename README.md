@@ -1,8 +1,8 @@
-# Coffee Leaf AI — Detección de Enfermedades en Hoja de Café
+# Coffee Leaf AI - Detección de Enfermedades en Hoja de Café
 
 Detección de enfermedades en hojas de café mediante Visión Computacional, expuesta a través de una aplicación web PWA accesible desde móvil.
 
-**Equipo — Ingeniería de Datos e IA**
+**Equipo - Ingeniería de Datos e IA**
 
 - [Natalia Moreno](https://github.com/natam226)
 - [Valentina Bueno](https://github.com/valentinabc19)
@@ -12,7 +12,7 @@ Detección de enfermedades en hojas de café mediante Visión Computacional, exp
 
 ## Modelo de detección
 
-**YOLOv8n** fine-tuned sobre el dataset [Coffee Leaf v6 (Roboflow)](https://roboflow.com), con 3.993 imágenes de entrenamiento y 167 de validación.
+**YOLOv8n** fine-tuned sobre el dataset [Coffee Leaf v6 (Roboflow)](https://universe.roboflow.com/tugas-akhir-adf4p/coffee-leaf/dataset/6), con 3.993 imágenes de entrenamiento y 167 de validación.
 
 | Clase | Descripción |
 |---|---|
