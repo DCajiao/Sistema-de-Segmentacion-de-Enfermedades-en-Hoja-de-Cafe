@@ -6,7 +6,7 @@ import { CameraCapture } from "@/components/CameraCapture";
 import { LoaderScreen } from "@/components/LoaderScreen";
 import { DiseaseResultScreen, NotCoffeeLeafScreen } from "@/components/ResultScreens";
 import { Button } from "@/components/ui/button";
-import { classifyDisease, validateCoffeeLeaf } from "@/lib/api";
+import { classifyDisease, validateCoffeeLeaf, type Detection } from "@/lib/api";
 import { addRecord } from "@/lib/history";
 
 export const Route = createFileRoute("/")({
@@ -29,7 +29,7 @@ type Step =
   | { name: "validating"; image: string }
   | { name: "not-coffee-leaf"; image: string; reason?: string }
   | { name: "classifying"; image: string }
-  | { name: "result"; image: string; disease: string; time: number };
+  | { name: "result"; image: string; detections: Detection[]; time: number };
 
 function Index() {
   const [step, setStep] = useState<Step>({ name: "intro" });
@@ -44,12 +44,16 @@ function Index() {
       }
       setStep({ name: "classifying", image });
       const r = await classifyDisease(image);
+      const primaryDisease = r.detections.length > 0
+        ? r.detections.reduce((a, b) => a.confidence > b.confidence ? a : b).disease
+        : "healthy";
       addRecord({
         image,
-        disease: r.disease,
+        disease: primaryDisease,
+        detections: r.detections,
         classification_time: r.classification_time,
       });
-      setStep({ name: "result", image, disease: r.disease, time: r.classification_time });
+      setStep({ name: "result", image, detections: r.detections, time: r.classification_time });
     } catch {
       setStep({
         name: "not-coffee-leaf",
@@ -102,7 +106,7 @@ function Index() {
         {step.name === "result" && (
           <DiseaseResultScreen
             image={step.image}
-            disease={step.disease}
+            detections={step.detections}
             time={step.time}
             onRestart={() => setStep({ name: "capture" })}
           />
