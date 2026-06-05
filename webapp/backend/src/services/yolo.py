@@ -3,8 +3,11 @@ import io
 import logging
 import time
 
+import torch
 from PIL import Image
 from ultralytics import YOLO
+
+torch.backends.nnpack.enabled = False
 
 logger = logging.getLogger(__name__)
 
@@ -64,13 +67,20 @@ def classify_coffee_leaf(image_base64: str) -> dict:
     n_boxes = len(results.boxes)
     logger.info("Inference done in %.2fs — %d box(es) detected", classification_time, n_boxes)
 
-    if n_boxes == 0:
-        logger.info("No boxes above conf=%.2f — defaulting to 'healthy'", CONF_THRESHOLD)
-        return {"disease": "healthy", "classification_time": classification_time}
+    detections = []
+    for box in results.boxes:
+        cid = int(box.cls[0])
+        conf = float(box.conf[0])
+        x1, y1, x2, y2 = [round(v, 1) for v in box.xyxy[0].tolist()]
+        disease = CLASS_NAMES[cid]
+        detections.append({
+            "disease": disease,
+            "confidence": round(conf, 3),
+            "bbox": [x1, y1, x2, y2],
+        })
+        logger.info("  → %s (conf=%.3f, bbox=[%.0f,%.0f,%.0f,%.0f])", disease, conf, x1, y1, x2, y2)
 
-    best = max(results.boxes, key=lambda b: float(b.conf[0]))
-    disease = CLASS_NAMES[int(best.cls[0])]
-    confidence = float(best.conf[0])
-    logger.info("Result: disease=%s | confidence=%.3f", disease, confidence)
+    if not detections:
+        logger.info("No boxes above conf=%.2f — leaf is healthy", CONF_THRESHOLD)
 
-    return {"disease": disease, "classification_time": classification_time}
+    return {"detections": detections, "classification_time": classification_time}
