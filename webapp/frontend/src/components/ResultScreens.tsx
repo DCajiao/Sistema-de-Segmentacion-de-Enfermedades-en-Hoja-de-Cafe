@@ -1,7 +1,11 @@
-import { AlertCircle, CheckCircle2, RotateCcw, Sparkles, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AlertCircle, CheckCircle2, RotateCcw, Sparkles, Clock, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
-import type { Detection } from "@/lib/api";
+import { interpretDetections } from "@/lib/api";
+import type { Detection, InterpretResponse } from "@/lib/api";
+
+// ── NotCoffeeLeafScreen ───────────────────────────────────────────────────────
 
 interface NotCoffeeLeafProps {
   reason?: string;
@@ -30,6 +34,131 @@ export function NotCoffeeLeafScreen({ reason, image, onRetry }: NotCoffeeLeafPro
   );
 }
 
+// ── ImageWithBoxes ────────────────────────────────────────────────────────────
+
+const DISEASE_COLORS: Record<string, string> = {
+  healthy: "#22c55e",
+  miner:   "#f59e0b",
+  phoma:   "#8b5cf6",
+  rust:    "#ef4444",
+};
+
+function ImageWithBoxes({ src, detections }: { src: string; detections: Detection[] }) {
+  const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
+
+  return (
+    <div className="relative w-full rounded-3xl overflow-hidden shadow-glow ring-4 ring-primary/20">
+      <img
+        src={src}
+        alt="Hoja de café analizada"
+        className="w-full h-auto block"
+        onLoad={(e) => {
+          const img = e.currentTarget;
+          setDims({ w: img.naturalWidth, h: img.naturalHeight });
+        }}
+      />
+      {dims &&
+        detections.map((d, i) => {
+          const [x1, y1, x2, y2] = d.bbox;
+          const color = DISEASE_COLORS[d.disease] ?? "#6b7280";
+          return (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                left:   `${(x1 / dims.w) * 100}%`,
+                top:    `${(y1 / dims.h) * 100}%`,
+                width:  `${((x2 - x1) / dims.w) * 100}%`,
+                height: `${((y2 - y1) / dims.h) * 100}%`,
+                border: `2px solid ${color}`,
+                boxSizing: "border-box",
+              }}
+            >
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: "100%",
+                  left: 0,
+                  background: color,
+                  color: "white",
+                  fontSize: 10,
+                  fontWeight: 600,
+                  padding: "1px 5px",
+                  borderRadius: "3px 3px 0 0",
+                  whiteSpace: "nowrap",
+                  lineHeight: "18px",
+                }}
+              >
+                {d.disease} {(d.confidence * 100).toFixed(0)}%
+              </span>
+            </div>
+          );
+        })}
+    </div>
+  );
+}
+
+// ── InterpretationSection ─────────────────────────────────────────────────────
+
+function InterpretationSection({ detections }: { detections: Detection[] }) {
+  const [data, setData] = useState<InterpretResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    interpretDetections(detections)
+      .then(setData)
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="w-full space-y-4 text-left rounded-2xl bg-card border border-border/60 p-4 shadow-sm">
+      <div className="flex items-center gap-2">
+        <BookOpen className="h-4 w-4 text-primary flex-shrink-0" />
+        <h3 className="font-semibold text-sm">¿Esto qué significa?</h3>
+      </div>
+
+      {loading ? (
+        <div className="space-y-2 animate-pulse">
+          <div className="h-3 bg-muted rounded w-full" />
+          <div className="h-3 bg-muted rounded w-5/6" />
+          <div className="h-3 bg-muted rounded w-4/5" />
+          <div className="h-8 bg-muted rounded w-full mt-3" />
+          <div className="h-8 bg-muted rounded w-full" />
+          <div className="h-8 bg-muted rounded w-4/5" />
+        </div>
+      ) : data ? (
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground leading-relaxed">{data.summary}</p>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-foreground mb-2">
+              Acciones recomendadas
+            </p>
+            <ul className="space-y-2">
+              {data.actions.map((action, i) => (
+                <li key={i} className="flex gap-2.5 text-sm items-start">
+                  <span className="mt-0.5 h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
+                    {i + 1}
+                  </span>
+                  <span className="text-foreground/80">{action}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200">
+            <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-800 leading-relaxed">{data.professional_note}</p>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// ── DiseaseResultScreen ───────────────────────────────────────────────────────
+
 interface DiseaseProps {
   detections: Detection[];
   time: number;
@@ -39,16 +168,16 @@ interface DiseaseProps {
 
 export function DiseaseResultScreen({ detections, time, image, onRestart }: DiseaseProps) {
   const healthy = detections.length === 0;
-  const primary = healthy ? null : detections.reduce((a, b) => a.confidence > b.confidence ? a : b);
+  const primary = healthy
+    ? null
+    : detections.reduce((a, b) => (a.confidence > b.confidence ? a : b));
   const displayName = primary ? primary.disease : "Sana";
 
   return (
-    <div className="flex flex-col items-center text-center gap-6 py-4">
-      <div className="relative w-44 h-44 rounded-3xl overflow-hidden shadow-glow ring-4 ring-primary/20">
-        <img src={image} alt="Hoja de café analizada" className="w-full h-full object-cover" />
-      </div>
+    <div className="flex flex-col gap-6 py-4 w-full">
+      <ImageWithBoxes src={image} detections={detections} />
 
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center text-center gap-2">
         {healthy ? (
           <CheckCircle2 className="h-10 w-10 text-primary" />
         ) : (
@@ -77,12 +206,14 @@ export function DiseaseResultScreen({ detections, time, image, onRestart }: Dise
         </div>
       )}
 
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm">
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm self-center">
         <Clock className="h-4 w-4" />
         Analizado en {time}s
       </div>
 
-      <div className="flex flex-col gap-3 w-full max-w-xs">
+      <InterpretationSection detections={detections} />
+
+      <div className="flex flex-col gap-3 w-full">
         <Button variant="hero" size="lg" onClick={onRestart} className="rounded-full">
           Analizar otra hoja
         </Button>
