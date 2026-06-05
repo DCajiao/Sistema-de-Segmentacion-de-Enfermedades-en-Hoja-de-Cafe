@@ -1,6 +1,6 @@
-# Coffee Leaf AI — Segmentación de Enfermedades en Hoja de Café
+# Coffee Leaf AI — Detección de Enfermedades en Hoja de Café
 
-Segmentación de enfermedades en hojas de café mediante Visión Computacional, expuesta a través de una aplicación web PWA accesible desde móvil.
+Detección de enfermedades en hojas de café mediante Visión Computacional, expuesta a través de una aplicación web PWA accesible desde móvil.
 
 **Equipo — Ingeniería de Datos e IA**
 
@@ -10,7 +10,7 @@ Segmentación de enfermedades en hojas de café mediante Visión Computacional, 
 
 ---
 
-## Modelo de segmentación
+## Modelo de detección
 
 **YOLOv8n** fine-tuned sobre el dataset [Coffee Leaf v6 (Roboflow)](https://roboflow.com), con 3.993 imágenes de entrenamiento y 167 de validación.
 

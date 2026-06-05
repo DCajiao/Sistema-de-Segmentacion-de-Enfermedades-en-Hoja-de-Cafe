@@ -1,4 +1,4 @@
-// API client for coffee leaf disease segmentation.
+// API client for coffee leaf disease detection.
 // Set VITE_API_URL in env to point to your backend. Falls back to mock responses.
 
 export interface ValidateResponse {
