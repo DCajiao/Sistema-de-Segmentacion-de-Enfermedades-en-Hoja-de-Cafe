@@ -88,7 +88,7 @@ El frontend se despliega en **Render** como Web Service Node.js. El backend se d
     │           ├── index.tsx      # Pantalla principal (cámara)
     │           └── history.tsx    # Historial de diagnósticos
     └── backend/
-        ├── main.py                # API Flask con /validate y /classify
+        ├── main.py                # API Flask con /validate, /classify y /interpret
         ├── .env.template          # Variables de entorno requeridas
         ├── model/
         │   └── best.pt            # Pesos YOLOv8n entrenados (Coffee Leaf v6, 6 MB)
@@ -138,9 +138,34 @@ Detecta enfermedades en la hoja mediante YOLOv8n. Devuelve todas las detecciones
 ```
 
 - `detections` vacío → hoja sana (ninguna detección supera el umbral).
-- `bbox` en píxeles `[x1, y1, x2, y2]` sobre la imagen redimensionada a 640×640 por YOLO internamente.
+- `bbox` en píxeles `[x1, y1, x2, y2]` en el espacio de la imagen original (YOLO reescala internamente pero devuelve coordenadas sobre las dimensiones originales).
 
 **Clases detectables:** `healthy` · `miner` · `phoma` · `rust`
+
+### `POST /interpret`
+Genera una interpretación agronómica de los resultados de detección usando Gemini 2.5 Flash. Recibe el array `detections` que devuelve `/classify` (puede estar vacío para hojas sanas).
+
+**Request**
+```json
+{
+  "detections": [
+    { "disease": "rust", "confidence": 0.848, "bbox": [45.0, 120.3, 390.5, 480.1] }
+  ]
+}
+```
+
+**Response**
+```json
+{
+  "summary": "Se detectó roya del café con alta confianza...",
+  "actions": [
+    "Aislar las plantas afectadas para evitar propagación.",
+    "Aplicar fungicida cúprico en las próximas 48 horas.",
+    "Revisar plantas circundantes en un radio de 5 metros."
+  ],
+  "professional_note": "Se recomienda confirmar el diagnóstico con un agrónomo certificado antes de aplicar cualquier producto."
+}
+```
 
 ---
 
@@ -183,7 +208,7 @@ pnpm dev
 | Root Directory | `webapp/frontend` |
 | Runtime | Node |
 | Build Command | `corepack enable && pnpm install && pnpm build` |
-| Start Command | `npm run start` |
+| Start Command | `pnpm start` |
 | Node Version | 20 |
 
 Variables de entorno en Render:
