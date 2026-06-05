@@ -6,12 +6,12 @@ export function AppHeader() {
   return (
     <header className="flex items-center justify-between px-5 py-4">
       <Link to="/" className="flex items-center gap-2">
-        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-[oklch(0.7_0.18_142)] flex items-center justify-center shadow-soft">
+        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-[oklch(0.65_0.12_50)] flex items-center justify-center shadow-soft">
           <Leaf className="h-5 w-5 text-primary-foreground" />
         </div>
         <div className="leading-tight">
-          <p className="text-sm font-bold tracking-tight">AvoScan</p>
-          <p className="text-[10px] text-muted-foreground">Diagnóstico de aguacate</p>
+          <p className="text-sm font-bold tracking-tight">Coffee Leaf AI</p>
+          <p className="text-[10px] text-muted-foreground">Diagnóstico de hoja de café</p>
         </div>
       </Link>
       {path !== "/history" && (
