@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Camera, Sparkles, ShieldCheck } from "lucide-react";
+import { Camera, Sparkles, ShieldCheck, Info } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { CameraCapture } from "@/components/CameraCapture";
 import { LoaderScreen } from "@/components/LoaderScreen";
@@ -144,6 +144,14 @@ function Intro({ onStart }: { onStart: () => void }) {
         <Feature icon={<Sparkles className="h-4 w-4" />} label="Rápido" />
         <Feature icon={<ShieldCheck className="h-4 w-4" />} label="Privado" />
       </ul>
+
+      <Link
+        to="/docs"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors mt-2"
+      >
+        <Info className="h-3.5 w-3.5" />
+        ¿Cómo está construida esta app?
+      </Link>
     </div>
   );
 }
