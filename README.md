@@ -61,7 +61,7 @@ El frontend se despliega en **Render** como Web Service Node.js. El backend se d
 | Modelo CV | YOLOv8n (Ultralytics) |
 | Validación de imagen | Gemini 2.5 Flash (Google AI) |
 | Gestión de paquetes (backend) | UV |
-| Gestión de paquetes (frontend) | npm |
+| Gestión de paquetes (frontend) | pnpm |
 | Containerización | Docker (backend) |
 
 ---
@@ -164,9 +164,9 @@ uv run python main.py
 
 ```bash
 cd webapp/frontend
-npm install
+pnpm install
 echo "VITE_API_URL=http://localhost:8000" > .env.local
-npm run dev
+pnpm dev
 # App disponible en http://localhost:3000
 ```
 
@@ -182,7 +182,7 @@ npm run dev
 |---|---|
 | Root Directory | `webapp/frontend` |
 | Runtime | Node |
-| Build Command | `npm install && npm run build` |
+| Build Command | `npm install -g pnpm && pnpm install && pnpm build` |
 | Start Command | `npm run start` |
 | Node Version | 20 |
 
