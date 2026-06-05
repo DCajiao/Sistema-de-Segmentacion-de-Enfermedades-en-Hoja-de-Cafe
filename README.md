@@ -1,12 +1,34 @@
-# Sistema de Detección de Enfermedades en Aguacate Común
+# Coffee Leaf AI — Detección de Enfermedades en Hoja de Café
 
-Detección de enfermedades en hojas de aguacate mediante Visión Computacional, expuesta a través de una aplicación web accesible desde móvil.
+Detección de enfermedades en hojas de café mediante Visión Computacional, expuesta a través de una aplicación web PWA accesible desde móvil.
 
 **Equipo — Ingeniería de Datos e IA**
 
 - [Natalia Moreno](https://github.com/natam226)
 - [Valentina Bueno](https://github.com/valentinabc19)
 - [David Cajiao](https://github.com/DCajiao)
+
+---
+
+## Modelo de detección
+
+**YOLOv8n** fine-tuned sobre el dataset [Coffee Leaf v6 (Roboflow)](https://roboflow.com), con 3.993 imágenes de entrenamiento y 167 de validación.
+
+| Clase | Descripción |
+|---|---|
+| `healthy` | Hoja sana |
+| `miner` | Minador de la hoja (*Leucoptera coffeella*) |
+| `phoma` | Mancha de hierro (*Phoma* spp.) |
+| `rust` | Roya del café (*Hemileia vastatrix*) |
+
+**Métricas (val set, 50 épocas):**
+
+| Métrica | Valor |
+|---|---|
+| Precision | 0.938 |
+| Recall | 0.961 |
+| mAP@0.5 | 0.959 |
+| mAP@0.5:0.95 | 0.710 |
 
 ---
 
@@ -36,6 +58,8 @@ El frontend se despliega en **Render** como Web Service Node.js. El backend se d
 | Routing | TanStack Router (file-based) |
 | Frontend build | Vite 7 + Nitro |
 | Backend | Python 3.11 + Flask 3 |
+| Modelo CV | YOLOv8n (Ultralytics) |
+| Validación de imagen | Gemini 2.5 Flash (Google AI) |
 | Gestión de paquetes (backend) | UV |
 | Gestión de paquetes (frontend) | npm |
 | Containerización | Docker (backend) |
@@ -47,30 +71,26 @@ El frontend se despliega en **Render** como Web Service Node.js. El backend se d
 ```
 .
 ├── notebooks/
-│   └── 00_EDA.ipynb          # Análisis exploratorio del dataset
-├── docs/                     # Documentación adicional
+│   └── CNN_Laboratorio2026.ipynb  # Fine-tuning YOLOv8 sobre Coffee Leaf v6
+├── docs/                          # Documentación adicional
 └── webapp/
     ├── frontend/
     │   ├── public/
     │   │   ├── icon-512.png
     │   │   └── manifest.json
-    │   ├── src/
-    │   │   ├── components/   # AppHeader, CameraCapture, ResultScreens, LoaderScreen
-    │   │   ├── components/ui/ # Componentes shadcn/ui
-    │   │   ├── hooks/
-    │   │   ├── lib/
-    │   │   │   ├── api.ts    # Cliente HTTP hacia el backend
-    │   │   │   └── history.ts
-    │   │   ├── routes/
-    │   │   │   ├── __root.tsx  # Layout raíz + metadata OG/Twitter
-    │   │   │   ├── index.tsx   # Pantalla principal (cámara)
-    │   │   │   └── history.tsx # Historial de diagnósticos
-    │   │   ├── router.tsx
-    │   │   └── start.ts      # Entry point SSR de TanStack Start
-    │   ├── package.json
-    │   └── vite.config.ts
+    │   └── src/
+    │       ├── components/        # AppHeader, CameraCapture, ResultScreens, LoaderScreen
+    │       ├── lib/
+    │       │   ├── api.ts         # Cliente HTTP hacia el backend
+    │       │   └── history.ts
+    │       └── routes/
+    │           ├── __root.tsx     # Layout raíz + metadata OG/Twitter
+    │           ├── index.tsx      # Pantalla principal (cámara)
+    │           └── history.tsx    # Historial de diagnósticos
     └── backend/
-        ├── main.py           # API Flask con /validate y /classify
+        ├── main.py                # API Flask con /validate y /classify
+        ├── src/services/
+        │   └── gemini.py          # Validación con Gemini
         ├── pyproject.toml
         ├── Dockerfile
         └── uv.lock
@@ -81,7 +101,7 @@ El frontend se despliega en **Render** como Web Service Node.js. El backend se d
 ## Endpoints del backend
 
 ### `POST /validate`
-Valida si la imagen contiene un aguacate.
+Valida si la imagen contiene una hoja de café (Gemini 2.5 Flash).
 
 **Request**
 ```json
@@ -90,12 +110,12 @@ Valida si la imagen contiene un aguacate.
 
 **Response**
 ```json
-{ "avocado": true }
-{ "avocado": false, "reason": "Descripción del problema" }
+{ "coffee_leaf": true }
+{ "coffee_leaf": false, "reason": "Descripción del problema en español" }
 ```
 
 ### `POST /classify`
-Clasifica la enfermedad presente en la hoja de aguacate.
+Clasifica la enfermedad presente en la hoja de café.
 
 **Request**
 ```json
@@ -104,10 +124,12 @@ Clasifica la enfermedad presente en la hoja de aguacate.
 
 **Response**
 ```json
-{ "disease": "Antracnosis", "classification_time": 1.23 }
+{ "disease": "rust", "classification_time": 0.82 }
 ```
 
-**Enfermedades detectables:** Antracnosis, Mancha negra (Cercospora), Roña del aguacate, Pudrición de raíz, Sano.
+**Clases detectables:** `healthy`, `miner`, `phoma`, `rust`
+
+> `/classify` actualmente devuelve valores mock. La integración de YOLOv8 es el próximo paso.
 
 ---
 
@@ -122,6 +144,7 @@ Clasifica la enfermedad presente en la hoja de aguacate.
 
 ```bash
 cd webapp/backend
+cp .env.template .env   # agregar GEMINI_API_KEY
 uv run python main.py
 # Servidor disponible en http://localhost:8000
 ```
@@ -130,19 +153,13 @@ uv run python main.py
 
 ```bash
 cd webapp/frontend
-
-# Primera vez
 npm install
-
-# Crear archivo de entorno local
 echo "VITE_API_URL=http://localhost:8000" > .env.local
-
-# Iniciar servidor de desarrollo
 npm run dev
 # App disponible en http://localhost:3000
 ```
 
-> Si no se define `VITE_API_URL`, el frontend usa respuestas mock automáticamente (útil para trabajar sin el backend levantado).
+> Si no se define `VITE_API_URL`, el frontend usa respuestas mock automáticamente.
 
 ---
 
@@ -168,8 +185,8 @@ VITE_API_URL=<URL del backend desplegado>
 
 ```bash
 cd webapp/backend
-docker build -t avoscan-backend .
-docker run -p 8000:8000 avoscan-backend
+docker build -t coffee-leaf-ai-backend .
+docker run -p 8000:8000 --env-file .env coffee-leaf-ai-backend
 ```
 
 ---
@@ -178,4 +195,4 @@ docker run -p 8000:8000 avoscan-backend
 
 | Notebook | Descripción |
 |---|---|
-| `00_EDA.ipynb` | Análisis exploratorio del dataset de imágenes de aguacate |
+| `CNN_Laboratorio2026.ipynb` | Fine-tuning YOLOv8n sobre Coffee Leaf v6, métricas por clase y análisis de errores |
