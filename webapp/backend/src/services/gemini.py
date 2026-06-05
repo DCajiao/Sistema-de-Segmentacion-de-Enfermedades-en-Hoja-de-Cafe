@@ -9,6 +9,8 @@ from google import genai
 from google.genai import types
 from pydantic import BaseModel
 
+# ── Validate ──────────────────────────────────────────────────────────────────
+
 VALIDATE_PROMPT = """
 You are a pre-filter for a coffee leaf disease analysis system.
 
@@ -75,4 +77,53 @@ def validate_coffee_leaf(image_base64: str) -> ValidateResult:
 
     result = response.parsed
     logger.info("Gemini result: coffee_leaf=%s | reason=%s", result.coffee_leaf, result.reason)
+    return result
+
+
+# ── Interpret ─────────────────────────────────────────────────────────────────
+
+INTERPRET_PROMPT_TEMPLATE = """
+Eres un agrónomo experto en enfermedades del cultivo de café.
+
+Un modelo de visión computacional analizó una hoja de café y obtuvo los siguientes resultados:
+{findings}
+
+Proporciona en español:
+1. Un resumen breve (2-3 oraciones) sobre el estado fitosanitario de la hoja y qué implica para el cultivo.
+2. Una lista de 3 a 5 acciones concretas e inmediatas que el agricultor puede tomar.
+3. Una nota recomendando consulta con un profesional agronómico.
+
+Sé práctico, directo y usa lenguaje comprensible para un agricultor.
+"""
+
+
+class InterpretResult(BaseModel):
+    summary: str
+    actions: list[str]
+    professional_note: str
+
+
+def interpret_detections(detections: list[dict]) -> InterpretResult:
+    if detections:
+        findings = "\n".join(
+            f"- {d['disease']} (confianza: {d['confidence'] * 100:.0f}%)"
+            for d in detections
+        )
+    else:
+        findings = "No se detectaron enfermedades. La hoja parece estar sana."
+
+    logger.info("Requesting Gemini interpretation for %d detection(s)", len(detections))
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[INTERPRET_PROMPT_TEMPLATE.format(findings=findings)],
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=InterpretResult,
+        ),
+    )
+
+    result = response.parsed
+    logger.info("Interpretation received — %d action(s)", len(result.actions))
     return result
