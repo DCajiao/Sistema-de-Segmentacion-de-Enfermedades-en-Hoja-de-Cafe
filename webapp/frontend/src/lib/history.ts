@@ -1,12 +1,15 @@
+import type { Detection } from "./api";
+
 export interface HistoryRecord {
   id: string;
   image: string; // base64 data URL
-  disease: string;
+  disease: string; // primary disease for display (highest confidence, or "healthy")
+  detections?: Detection[]; // absent in records from older versions
   classification_time: number;
   createdAt: number;
 }
 
-const KEY = "avoscan:history:v1";
+const KEY = "coffee-leaf-ai:history:v1";
 
 export function getHistory(): HistoryRecord[] {
   if (typeof window === "undefined") return [];
